@@ -42,6 +42,14 @@ INSTALLED_APPS = [
     "users_service",
 ]
 
+AUTH_USER_MODEL = "users_service.Customer"
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    )
+}
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
