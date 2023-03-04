@@ -16,7 +16,7 @@ class BookSerializer(serializers.ModelSerializer):
         )
 
 
-class BookLisDetailSerializer(BookSerializer):
+class BookListDetailSerializer(BookSerializer):
     class Meta:
         model = Book
         fields = (
