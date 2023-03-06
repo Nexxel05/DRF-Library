@@ -23,5 +23,8 @@ urlpatterns = [
     )),
     path("users/", include(
         "users_service.urls", namespace="users_service"
+    )),
+    path("borrowings/", include(
+        "borrowings_service.urls", namespace="borrowings_service"
     ))
 ]
