@@ -1,8 +1,8 @@
+from django.conf import settings
 from django.db import models
 from django.db.models import Q
 
 from books_service.models import Book
-from users_service.models import Customer
 
 
 class Borrowing(models.Model):
@@ -15,12 +15,13 @@ class Borrowing(models.Model):
         on_delete=models.CASCADE
     )
     customer = models.ForeignKey(
-        Customer,
+        settings.AUTH_USER_MODEL,
         related_name="borrowings",
         on_delete=models.CASCADE
     )
 
     class Meta:
+        ordering = ("borrow_date",)
         constraints = [
             models.CheckConstraint(
                 check=Q(borrow_date__lte=models.F("expected_return_date")),
