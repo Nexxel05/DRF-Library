@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.db.models import Q
+from rest_framework.exceptions import ValidationError
 
 from books_service.models import Book
 
@@ -32,3 +33,19 @@ class Borrowing(models.Model):
                 name="borrow_date_lte_actual_return_date"
             )
         ]
+
+    @staticmethod
+    def validate_book_inventory(inventory: int, error_to_raise):
+        if inventory == 0:
+            raise error_to_raise(
+                "Inventory of this book is 0, it can not be borrowed"
+            )
+
+    def clean(self):
+        Borrowing.validate_book_inventory(self.book.inventory, ValidationError)
+
+    def save(
+        self, force_insert=False, force_update=False, using=None, update_fields=None
+    ):
+        self.full_clean()
+        return super(Borrowing, self).save(force_insert, force_update, using, update_fields)

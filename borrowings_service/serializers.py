@@ -32,10 +32,7 @@ class BorrowingCreateSerializer(BorrowingSerializer):
 
     def validate(self, attrs):
         data = super(BorrowingCreateSerializer, self).validate(attrs)
-        if data["book"].inventory == 0:
-            raise serializers.ValidationError(
-                f"The {data['book'].title} is out of stock"
-            )
+        Borrowing.validate_book_inventory(data["book"].inventory, serializers.ValidationError)
         return data
 
 
