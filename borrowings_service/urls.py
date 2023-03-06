@@ -1,14 +1,15 @@
 from django.urls import path
 
-from borrowings_service.views import BorrowingListDetailView
+from borrowings_service.views import BorrowingView
 
-borrowings_list = BorrowingListDetailView.as_view(
+borrowings_list = BorrowingView.as_view(
     actions={
         "get": "list",
+        "post": "create"
     }
 )
 
-borrowings_detail = BorrowingListDetailView.as_view(
+borrowings_detail = BorrowingView.as_view(
     actions={
         "get": "retrieve",
     }
