@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from books_service.serializers import BookListDetailSerializer
 from borrowings_service.models import Borrowing
+from borrowings_service.telegram_bot import send_borrowing_notification
 
 
 class BorrowingSerializer(serializers.ModelSerializer):
@@ -21,13 +22,14 @@ class BorrowingSerializer(serializers.ModelSerializer):
 class BorrowingCreateSerializer(BorrowingSerializer):
     class Meta:
         model = Borrowing
-        exclude = ("customer",)
+        exclude = ("actual_return_date", "customer",)
 
     def create(self, validated_data):
         borrowing = Borrowing.objects.create(**validated_data)
         book = borrowing.book
         book.inventory -= 1
         book.save()
+        send_borrowing_notification(borrowing)
         return borrowing
 
     def validate(self, attrs):
