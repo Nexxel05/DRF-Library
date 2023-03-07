@@ -15,8 +15,16 @@ borrowings_detail = BorrowingView.as_view(
     }
 )
 
+borrowings_return = BorrowingView.as_view(
+    actions={
+        "get": "retrieve",
+        "put": "update",
+    }
+)
+
 urlpatterns = [
     path("<int:pk>/", borrowings_detail),
+    path("<int:pk>/return", borrowings_return),
     path("", borrowings_list),
 ]
 

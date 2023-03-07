@@ -4,7 +4,8 @@ from rest_framework.permissions import IsAuthenticated
 from borrowings_service.models import Borrowing
 from borrowings_service.serializers import (
     BorrowingListSerializer,
-    BorrowingCreateSerializer
+    BorrowingCreateSerializer,
+    BorrowingReturnSerializer
 )
 
 
@@ -12,9 +13,9 @@ class BorrowingView(
     viewsets.GenericViewSet,
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
-    mixins.CreateModelMixin
+    mixins.CreateModelMixin,
+    mixins.UpdateModelMixin
 ):
-    serializer_class = BorrowingListSerializer
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
@@ -41,9 +42,10 @@ class BorrowingView(
         serializer_dict = {
             "list": BorrowingListSerializer,
             "retrieve": BorrowingListSerializer,
-            "create": BorrowingCreateSerializer
+            "create": BorrowingCreateSerializer,
+            "update": BorrowingReturnSerializer,
         }
-        return serializer_dict.get(self.action)
+        return serializer_dict.get(self.action, BorrowingListSerializer)
 
     def perform_create(self, serializer):
         serializer.save(customer=self.request.user)
