@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "rest_framework",
+    "django_q",
     "books_service",
     "users_service",
     "borrowings_service",
@@ -57,6 +58,15 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+}
+
+Q_CLUSTER = {
+    "name": "DjangoORM",
+    "workers": 1,
+    "timeout": 60,
+    "retry": 120,
+    "queue_limit": 50,
+    "orm": "default",
 }
 
 MIDDLEWARE = [
