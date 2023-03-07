@@ -38,3 +38,36 @@ class BorrowingCreateSerializer(BorrowingSerializer):
 
 class BorrowingListSerializer(BorrowingSerializer):
     book = BookListDetailSerializer(read_only=True)
+
+
+class BorrowingReturnSerializer(BorrowingSerializer):
+    class Meta:
+        model = Borrowing
+        fields = (
+            "id",
+            "borrow_date",
+            "expected_return_date",
+            "actual_return_date",
+            "book",
+            "customer"
+        )
+        read_only_fields = (
+            "borrow_date",
+            "expected_return_date",
+            "book",
+            "customer"
+        )
+
+    def update(self, instance, validated_data):
+        if not instance.actual_return_date:
+            if validated_data.get("actual_return_date") < instance.borrow_date:
+                raise serializers.ValidationError(
+                    "Actual return date can not be earlier than borrow date"
+                )
+            instance.actual_return_date = validated_data.get(
+                "actual_return_date", instance.actual_return_date
+            )
+            instance.book.inventory += 1
+            instance.book.save()
+            instance.save()
+        return instance
