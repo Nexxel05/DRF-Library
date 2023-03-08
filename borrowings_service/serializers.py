@@ -72,4 +72,7 @@ class BorrowingReturnSerializer(BorrowingSerializer):
             instance.book.inventory += 1
             instance.book.save()
             instance.save()
-        return instance
+            return instance
+        raise serializers.ValidationError(
+                "This book was already returned"
+            )
