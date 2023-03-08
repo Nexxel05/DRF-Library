@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import viewsets, mixins
 from rest_framework.permissions import IsAuthenticated
 
@@ -49,3 +50,19 @@ class BorrowingView(
 
     def perform_create(self, serializer):
         serializer.save(customer=self.request.user)
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="user_id",
+                description="Search by user id",
+                type=int
+            ),
+            OpenApiParameter(
+                name="is_active",
+                description="Search by pending borrowings",
+            )
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
