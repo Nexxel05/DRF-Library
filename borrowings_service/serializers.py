@@ -34,7 +34,10 @@ class BorrowingCreateSerializer(BorrowingSerializer):
 
     def validate(self, attrs):
         data = super(BorrowingCreateSerializer, self).validate(attrs)
-        Borrowing.validate_book_inventory(data["book"].inventory, serializers.ValidationError)
+        Borrowing.validate_book_inventory(
+            data["book"].inventory,
+            serializers.ValidationError
+        )
         return data
 
 

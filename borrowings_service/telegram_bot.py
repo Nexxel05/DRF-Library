@@ -17,18 +17,21 @@ def send_borrowing_notification(borrowing: Borrowing):
 
     text = f"Borrowing id: {borrowing.id}\n" \
            f"Borrowing date: {borrowing.borrow_date}\n" \
-           f"Borrowing expected return date: {borrowing.expected_return_date}\n" \
+           f"Borrowing expected return date: " \
+           f"{borrowing.expected_return_date}\n" \
            f"Book: {borrowing.book}\n" \
            f"Customer: {borrowing.customer}"
 
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
     params = {"chat_id": TELEGRAM_CHAT_ID, "text": text}
-    response = requests.post(url, json=params)
+    requests.post(url, json=params)
 
 
 def send_overdue_borrowing_notification():
     tomorrow = datetime.today() + timedelta(1)
-    borrowings = Borrowing.objects.filter(Q(actual_return_date__isnull=True) & Q(expected_return_date=tomorrow))
+    borrowings = Borrowing.objects.filter(
+        Q(actual_return_date__isnull=True) & Q(expected_return_date=tomorrow)
+    )
 
     if borrowings:
         for borrowing in borrowings:
@@ -37,4 +40,4 @@ def send_overdue_borrowing_notification():
         text = "No borrowings overdue today!"
         url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
         params = {"chat_id": TELEGRAM_CHAT_ID, "text": text}
-        response = requests.post(url, json=params)
+        requests.post(url, json=params)
