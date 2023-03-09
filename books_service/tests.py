@@ -75,7 +75,6 @@ class AuthenticatedUserTest(TestCase):
         book = sample_book()
 
         res = self.client.get(detail_url(book.id))
-
         serializer = BookListDetailSerializer(book)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -158,4 +157,4 @@ class AdminUserTest(TestCase):
 
         res = self.client.delete(detail_url(book.id))
 
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
