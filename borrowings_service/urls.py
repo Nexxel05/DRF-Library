@@ -23,9 +23,9 @@ borrowings_return = BorrowingView.as_view(
 )
 
 urlpatterns = [
-    path("<int:pk>/", borrowings_detail),
-    path("<int:pk>/return", borrowings_return),
-    path("", borrowings_list),
+    path("<int:pk>/", borrowings_detail, name="borrowing-detail"),
+    path("<int:pk>/return/", borrowings_return, name="borrowing-return"),
+    path("", borrowings_list, name="borrowing-list"),
 ]
 
 app_name = "borrowings_service"
