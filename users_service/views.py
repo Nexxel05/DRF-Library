@@ -13,5 +13,5 @@ class ManageCustomerView(generics.RetrieveUpdateAPIView):
     serializer_class = CustomerSerializer
     permission_classes = (IsAuthenticated,)
 
-    def get_object(self):
+    def get_object(self) -> object:
         return self.request.user

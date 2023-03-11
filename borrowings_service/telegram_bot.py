@@ -13,7 +13,7 @@ TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
 
-def send_borrowing_notification(borrowing: Borrowing):
+def send_borrowing_notification(borrowing: Borrowing) -> None:
 
     text = f"Borrowing id: {borrowing.id}\n" \
            f"Borrowing date: {borrowing.borrow_date}\n" \
@@ -27,7 +27,7 @@ def send_borrowing_notification(borrowing: Borrowing):
     requests.post(url, json=params)
 
 
-def send_overdue_borrowing_notification():
+def send_overdue_borrowing_notification() -> None:
     tomorrow = datetime.today() + timedelta(1)
     borrowings = Borrowing.objects.filter(
         Q(actual_return_date__isnull=True) & Q(expected_return_date=tomorrow)

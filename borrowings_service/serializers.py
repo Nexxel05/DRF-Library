@@ -24,7 +24,7 @@ class BorrowingCreateSerializer(BorrowingSerializer):
         model = Borrowing
         exclude = ("actual_return_date", "customer",)
 
-    def create(self, validated_data):
+    def create(self, validated_data: dict) -> Borrowing:
         borrowing = Borrowing.objects.create(**validated_data)
         book = borrowing.book
         book.inventory -= 1
@@ -32,7 +32,7 @@ class BorrowingCreateSerializer(BorrowingSerializer):
         send_borrowing_notification(borrowing)
         return borrowing
 
-    def validate(self, attrs):
+    def validate(self, attrs: list) -> dict:
         data = super(BorrowingCreateSerializer, self).validate(attrs)
         Borrowing.validate_book_inventory(
             data["book"].inventory,
@@ -63,7 +63,11 @@ class BorrowingReturnSerializer(BorrowingSerializer):
             "customer"
         )
 
-    def update(self, instance, validated_data):
+    def update(
+            self,
+            instance: Borrowing,
+            validated_data: dict
+    ) -> Borrowing:
         if not instance.actual_return_date:
             if validated_data.get("actual_return_date") < instance.borrow_date:
                 raise serializers.ValidationError(

@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.conf import settings
 from django.db import models
 from django.db.models import Q
@@ -35,22 +37,22 @@ class Borrowing(models.Model):
         ]
 
     @staticmethod
-    def validate_book_inventory(inventory: int, error_to_raise):
+    def validate_book_inventory(inventory: int, error_to_raise: Any) -> None:
         if inventory == 0:
             raise error_to_raise(
                 "Inventory of this book is 0, it can not be borrowed"
             )
 
-    def clean(self):
+    def clean(self) -> None:
         Borrowing.validate_book_inventory(self.book.inventory, ValidationError)
 
     def save(
             self,
-            force_insert=False,
-            force_update=False,
-            using=None,
-            update_fields=None
-    ):
+            force_insert: bool = False,
+            force_update: bool = False,
+            using: object = None,
+            update_fields: list = None
+    ) -> callable:
         self.full_clean()
         return super(Borrowing, self).save(
             force_insert,

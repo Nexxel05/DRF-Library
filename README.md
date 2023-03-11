@@ -43,6 +43,7 @@ DJANGO_SECRET_KEY, TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID
 like shown in .env_sample
 
 ```
+python manage.py makemigrations
 python manage.py migrate
 python manage.py runserver
 ```

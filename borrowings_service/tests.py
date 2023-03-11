@@ -1,3 +1,5 @@
+from typing import Any
+
 import django.core.exceptions
 from django.contrib.auth import get_user_model
 from django.test import TestCase
@@ -8,11 +10,12 @@ from rest_framework.test import APIClient
 from books_service.tests import sample_book
 from borrowings_service.models import Borrowing
 from borrowings_service.serializers import BorrowingListSerializer
+from users_service.models import Customer
 
 BORROWING_URL = reverse("borrowings_service:borrowing-list")
 
 
-def sample_customer(**params):
+def sample_customer(**params: Any) -> Customer:
     defaults = {
         "email": "test@test.com",
         "password": "test1234",
@@ -21,7 +24,7 @@ def sample_customer(**params):
     return get_user_model().objects.create(**defaults)
 
 
-def sample_borrowing(**params):
+def sample_borrowing(**params: Any) -> Borrowing:
     defaults = {
         "borrow_date": "2023-01-01",
         "expected_return_date": "2023-01-03",
@@ -31,16 +34,16 @@ def sample_borrowing(**params):
     return Borrowing.objects.create(**defaults)
 
 
-def detail_url(borrowing_id: int):
+def detail_url(borrowing_id: int) -> str:
     return reverse("borrowings_service:borrowing-detail", args=[borrowing_id])
 
 
-def return_url(borrowing_id: int):
+def return_url(borrowing_id: int) -> str:
     return reverse("borrowings_service:borrowing-return", args=[borrowing_id])
 
 
 class BorrowingModelTest(TestCase):
-    def test_borrowing_expected_return_date_constraint(self):
+    def test_borrowing_expected_return_date_constraint(self) -> None:
         with self.assertRaises(django.core.exceptions.ValidationError):
             sample_borrowing(
                 borrow_date="2023-01-02",
@@ -48,7 +51,7 @@ class BorrowingModelTest(TestCase):
                 customer=sample_customer()
             )
 
-    def test_borrowing_actual_return_date_constraint(self):
+    def test_borrowing_actual_return_date_constraint(self) -> None:
         with self.assertRaises(django.core.exceptions.ValidationError):
             sample_borrowing(
                 borrow_date="2023-01-02",
@@ -58,7 +61,7 @@ class BorrowingModelTest(TestCase):
 
             )
 
-    def test_borrowing_not_created_with_book_0_inventory(self):
+    def test_borrowing_not_created_with_book_0_inventory(self) -> None:
         book = sample_book(inventory=0)
         with self.assertRaises(exceptions.ValidationError):
             Borrowing.objects.create(
@@ -72,14 +75,14 @@ class UnauthenticatedUserTest(TestCase):
     def setUp(self) -> None:
         self.client = APIClient()
 
-    def test_auth_required(self):
+    def test_auth_required(self) -> None:
         res = self.client.get(BORROWING_URL)
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
 class AuthenticatedUserTest(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.client = APIClient()
         self.user = get_user_model().objects.create_user(
             "test@t.com",
@@ -88,7 +91,7 @@ class AuthenticatedUserTest(TestCase):
 
         self.client.force_authenticate(self.user)
 
-    def test_list_borrowing_only_created_by_user(self):
+    def test_list_borrowing_only_created_by_user(self) -> None:
         sample_borrowing(customer=sample_customer())
         sample_borrowing(customer=self.user)
 
@@ -101,7 +104,7 @@ class AuthenticatedUserTest(TestCase):
         self.assertNotEqual(res.data, serializer.data)
         self.assertEqual(len(res.data), 1)
 
-    def test_borrowing_retrieve_allowed(self):
+    def test_borrowing_retrieve_allowed(self) -> None:
         borrowing = sample_borrowing(customer=self.user)
 
         res = self.client.get(detail_url(borrowing.id))
@@ -110,7 +113,7 @@ class AuthenticatedUserTest(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(serializer.data, res.data)
 
-    def test_borrowing_create_by_current_user(self):
+    def test_borrowing_create_by_current_user(self) -> None:
         book = sample_book()
         defaults = {
             "borrow_date": "2023-02-02",
@@ -125,7 +128,7 @@ class AuthenticatedUserTest(TestCase):
         self.assertEqual(res.data["borrow_date"], defaults["borrow_date"])
         self.assertEqual(borrowing.customer, self.user)
 
-    def test_book_inventory_decreased_when_borrowing_created(self):
+    def test_book_inventory_decreased_when_borrowing_created(self) -> None:
         book = sample_book()
 
         defaults = {
@@ -140,7 +143,7 @@ class AuthenticatedUserTest(TestCase):
         self.assertEqual(res.data["book"], book.id)
         self.assertEqual(borrowing.book.inventory, book.inventory - 1)
 
-    def test_book_inventory_increased_when_book_is_returned(self):
+    def test_book_inventory_increased_when_book_is_returned(self) -> None:
         book = sample_book()
         borrowing = sample_borrowing(
             book=book,
@@ -156,7 +159,7 @@ class AuthenticatedUserTest(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(borrowing.book.inventory, book.inventory + 1)
 
-    def test_borrowings_filtering_by_is_active(self):
+    def test_borrowings_filtering_by_is_active(self) -> None:
         borrowing_due = sample_borrowing(customer=self.user)
         borrowing_not_due = sample_borrowing(
             customer=self.user,
@@ -173,7 +176,7 @@ class AuthenticatedUserTest(TestCase):
 
 
 class AdminUserTest(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.client = APIClient()
         self.user = get_user_model().objects.create_user(
             "admin@test.com",
@@ -182,7 +185,7 @@ class AdminUserTest(TestCase):
         )
         self.client.force_authenticate(self.user)
 
-    def test_list_all_borrowings(self):
+    def test_list_all_borrowings(self) -> None:
         sample_borrowing(customer=sample_customer())
         sample_borrowing(customer=self.user)
 
@@ -195,14 +198,14 @@ class AdminUserTest(TestCase):
         self.assertEqual(res.data, serializer.data)
         self.assertEqual(len(res.data), 2)
 
-    def test_delete_borrowing_not_available(self):
+    def test_delete_borrowing_not_available(self) -> None:
         borrowing = sample_borrowing(customer=self.user)
 
         res = self.client.delete(detail_url(borrowing.id))
 
         self.assertEqual(res.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    def test_borrowings_filtering_by_user_id(self):
+    def test_borrowings_filtering_by_user_id(self) -> None:
         customer = sample_customer()
         borrowing1 = sample_borrowing(customer=customer)
         borrowing2 = sample_borrowing(customer=self.user)
@@ -215,7 +218,7 @@ class AdminUserTest(TestCase):
         self.assertIn(serializer1.data, res.data)
         self.assertNotIn(serializer2.data, res.data)
 
-    def test_borrowings_filtering_by_user_id_and_is_active(self):
+    def test_borrowings_filtering_by_user_id_and_is_active(self) -> None:
         customer = sample_customer()
         borrowing1 = sample_borrowing(customer=customer)
         borrowing2 = sample_borrowing(customer=self.user)

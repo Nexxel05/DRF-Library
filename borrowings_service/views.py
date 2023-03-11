@@ -1,6 +1,9 @@
+from django.db.models import QuerySet
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import viewsets, mixins
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.request import Request
+from rest_framework.serializers import Serializer
 
 from borrowings_service.models import Borrowing
 from borrowings_service.serializers import (
@@ -19,7 +22,7 @@ class BorrowingView(
 ):
     permission_classes = (IsAuthenticated,)
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet:
         queryset = Borrowing.objects.all()
 
         is_active = self.request.query_params.get("is_active")
@@ -39,7 +42,7 @@ class BorrowingView(
 
         return queryset
 
-    def get_serializer_class(self):
+    def get_serializer_class(self) -> Serializer:
         serializer_dict = {
             "list": BorrowingListSerializer,
             "retrieve": BorrowingListSerializer,
@@ -48,7 +51,7 @@ class BorrowingView(
         }
         return serializer_dict.get(self.action, BorrowingListSerializer)
 
-    def perform_create(self, serializer):
+    def perform_create(self, serializer: Serializer) -> None:
         serializer.save(customer=self.request.user)
 
     @extend_schema(
@@ -64,5 +67,10 @@ class BorrowingView(
             )
         ]
     )
-    def list(self, request, *args, **kwargs):
+    def list(
+            self,
+            request: Request,
+            *args: list,
+            **kwargs: list
+    ) -> callable:
         return super().list(request, *args, **kwargs)
