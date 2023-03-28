@@ -26,9 +26,9 @@ Skip telegram part if you don't need this.
 1. Create telegram group where notifications received
 2. Add telegram bot that you've just created to group
 3. Type something in newly created group
-4. Navigate to (https://api.telegram.org/bot<YourBOTToken>/getUpdates)
+4. Navigate to **https://<!-->api.telegram.org/bot<YourBOTToken>/getUpdates**
 where _YourBOTToken_ is your bot token.
-For example: (https://api.telegram.org/bot123456789:jbd78sadvbdy63d37gda37bd8/getUpdates)
+For example: https://api.telegram.org/bot123456789:jbd78sadvbdy63d37gda37bd8/getUpdates
 5. Look for the **chat** object - store it safely!!!
 ### Install project
 
