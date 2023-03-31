@@ -34,7 +34,8 @@ For example: https://api.telegram.org/bot123456789:jbd78sadvbdy63d37gda37bd8/get
 
 ```shell
 git clone https://github.com/Nexxel05/DRF-Library.git
-python3 -m venv venv
+cd DRF-Library
+python -m venv venv
 venv\Scripts\activate
 pip install -r requirements.txt
 ```

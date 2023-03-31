@@ -5,8 +5,8 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status, exceptions
-
 from rest_framework.test import APIClient
+
 from books_service.tests import sample_book
 from borrowings_service.models import Borrowing
 from borrowings_service.serializers import BorrowingListSerializer
