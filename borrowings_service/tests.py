@@ -102,7 +102,7 @@ class AuthenticatedUserTest(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertNotEqual(res.data, serializer.data)
-        self.assertEqual(len(res.data), 1)
+        self.assertEqual(len(res.data["results"]), 1)
 
     def test_borrowing_retrieve_allowed(self) -> None:
         borrowing = sample_borrowing(customer=self.user)
@@ -138,7 +138,7 @@ class AuthenticatedUserTest(TestCase):
         }
 
         res = self.client.post(BORROWING_URL, defaults)
-        borrowing = Borrowing.objects.get(id=res.data["book"])
+        borrowing = Borrowing.objects.get(id=res.data["id"])
 
         self.assertEqual(res.data["book"], book.id)
         self.assertEqual(borrowing.book.inventory, book.inventory - 1)
@@ -171,8 +171,8 @@ class AuthenticatedUserTest(TestCase):
 
         res = self.client.get(BORROWING_URL, {"is_active": " "})
 
-        self.assertIn(serializer_due.data, res.data)
-        self.assertNotIn(serializer_not_due.data, res.data)
+        self.assertIn(serializer_due.data, res.data["results"])
+        self.assertNotIn(serializer_not_due.data, res.data["results"])
 
 
 class AdminUserTest(TestCase):
@@ -195,8 +195,8 @@ class AdminUserTest(TestCase):
         res = self.client.get(BORROWING_URL)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data, serializer.data)
-        self.assertEqual(len(res.data), 2)
+        self.assertEqual(res.data["results"], serializer.data)
+        self.assertEqual(len(res.data["results"]), 2)
 
     def test_delete_borrowing_not_available(self) -> None:
         borrowing = sample_borrowing(customer=self.user)
@@ -215,8 +215,8 @@ class AdminUserTest(TestCase):
 
         res = self.client.get(BORROWING_URL, {"user_id": customer.id})
 
-        self.assertIn(serializer1.data, res.data)
-        self.assertNotIn(serializer2.data, res.data)
+        self.assertIn(serializer1.data, res.data["results"])
+        self.assertNotIn(serializer2.data, res.data["results"])
 
     def test_borrowings_filtering_by_user_id_and_is_active(self) -> None:
         customer = sample_customer()
@@ -236,6 +236,6 @@ class AdminUserTest(TestCase):
             "is_active": " "
         })
 
-        self.assertIn(serializer1.data, res.data)
-        self.assertNotIn(serializer2.data, res.data)
-        self.assertNotIn(serializer3.data, res.data)
+        self.assertIn(serializer1.data, res.data["results"])
+        self.assertNotIn(serializer2.data, res.data["results"])
+        self.assertNotIn(serializer3.data, res.data["results"])

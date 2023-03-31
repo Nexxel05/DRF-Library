@@ -62,15 +62,15 @@ class AuthenticatedUserTest(TestCase):
         self.client.force_authenticate(self.user)
 
     def test_list_books(self) -> None:
-        sample_book()
-        sample_book()
-        books = Book.objects.all()
+        book = sample_book()
 
-        serializer = BookListDetailSerializer(books, many=True)
-        res = self.client.get(BOOK_URL)
+        serializer_book = BookListDetailSerializer(book, many=False)
+
+        res = self.client.get(BOOK_URL, {"offset": 10})
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data, serializer.data)
+        self.assertIn(serializer_book.data, res.data["results"])
+        self.assertEqual(len(res.data["results"]), 2)
 
     def test_retrieve_book_with_usd_daily_fee(self) -> None:
         book = sample_book()
