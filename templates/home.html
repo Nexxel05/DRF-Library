@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body style="margin-top: 50px">
+  <div style="text-align:center">
+    <h1>Welcome to our library!</h1>
+    <h3>Here you can view available books, borrow them and manage their return</h3>
+    <div>
+      <h4>
+        <a href="{% url 'users_service:create' %}">Create</a> user first
+        and <a href="{% url 'users_service:token_obtain_pair' %}">get</a> your token required for authentication
+      </h4>
+    </div>
+    <div>You might want to proceed to next urls:
+      <p><a href="{% url 'books_service:book-list' %}">Books</a></p>
+      <p><a href="{% url 'borrowings_service:borrowing-list' %}">Borrowings</a></p>
+    </div>
+    <h4><a href="{% url 'swagger' %}">Swagger</a> Documentation available, check it out!</h4>
+  </div>
+
+</body>
+</html>
