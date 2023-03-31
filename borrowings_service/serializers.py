@@ -6,7 +6,6 @@ from borrowings_service.telegram_bot import send_borrowing_notification
 
 
 class BorrowingSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Borrowing
         fields = (
@@ -81,5 +80,5 @@ class BorrowingReturnSerializer(BorrowingSerializer):
             instance.save()
             return instance
         raise serializers.ValidationError(
-                "This book was already returned"
-            )
+            "This book was already returned"
+        )
